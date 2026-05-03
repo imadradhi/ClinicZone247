@@ -1,0 +1,20 @@
+        function switchSettingsTab(tabId) {
+            // إخفاء كافة لوحات الإعدادات
+            document.querySelectorAll('.settings-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            // إلغاء تفعيل كافة أزرار التبويبات
+            document.querySelectorAll('.settings-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // إظهار اللوحة المطلوبة وتفعيل زرها
+            document.getElementById('settings-' + tabId).classList.add('active');
+            const activeBtn = Array.from(document.querySelectorAll('.settings-tab-btn')).find(btn => {
+                return btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${tabId}'`);
+            });
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        // --- وظيفة تسجيل الخروج مع التأكيد ---
+        function handleLogout() {

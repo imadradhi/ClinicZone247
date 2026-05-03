@@ -1,0 +1,6 @@
+.services-view-grid {
+<div class="nav-item" onclick="showSection('services-view')"><i class="fas fa-concierge-bell"></i> الخدمات
+<section id="services-view" class="content-section">
+<div id="services-grid" class="services-view-grid"></div>
+if (id === 'services-view') loadServicesView();
+const list = document.getElementById('services-view-list');

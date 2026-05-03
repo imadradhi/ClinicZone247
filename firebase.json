@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "target": "clinic-zone-hosting", // هذا هو اسم الهدف الذي ستستخدمه في أوامر CLI
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

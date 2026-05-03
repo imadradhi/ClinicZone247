@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "clinic-305a4"
+  },
+  "targets": {
+    "clinic-305a4": {
+      "hosting": {
+        "clinic-zone-hosting": [
+          "clinic-zone-247"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

@@ -1,0 +1,200 @@
+            <section id="settings" class="content-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2 style="margin: 0;"><i class="fas fa-tools"></i> إعدادات النظام</h2>
+                </div>
+
+                <!-- Settings Tabs -->
+                <div class="settings-tabs">
+                    <button class="settings-tab-btn active" onclick="switchSettingsTab('general')">
+                        <i class="fas fa-hospital"></i> إعدادات عامة
+                    </button>
+                    <button class="settings-tab-btn" onclick="switchSettingsTab('schedule')">
+                        <i class="fas fa-clock"></i> توقيت المواعيد
+                    </button>
+                    <button class="settings-tab-btn" onclick="switchSettingsTab('services')">
+                        <i class="fas fa-concierge-bell"></i> إدارة الخدمات
+                    </button>
+                </div>
+
+                <!-- Tab Panels -->
+                <div class="settings-content">
+
+                    <!-- 1. General Settings Panel -->
+                    <div id="settings-panel-general" class="settings-panel active">
+                        <div class="settings-card">
+                            <h3 class="settings-header"><i class="fas fa-info-circle"></i> معلومات العيادة
+                                الأساسية</h3>
+                            <div class="form-group" style="max-width: 500px;">
+                                <label>اسم العيادة (يظهر في الوصولات والتقارير)</label>
+                                <div style="position: relative;">
+                                    <i class="fas fa-clinic-medical"
+                                        style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
+                                    <input type="text" id="set-clinic-name"
+                                        placeholder="أدخل اسم العيادة الرسمي"
+                                        style="padding-right: 45px;">
+                                </div>
+                            </div>
+                            <div class="settings-footer">
+                                <button class="btn btn-primary" onclick="saveClinicName()">
+                                    <i class="fas fa-save"></i> حفظ اسم العيادة
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Schedule Settings Panel -->
+                    <div id="settings-panel-schedule" class="settings-panel">
+                        <div class="settings-card">
+                            <h3 class="settings-header"><i class="fas fa-calendar-alt"></i> إعدادات جدول
+                                المواعيد</h3>
+
+                            <div class="form-group" style="margin-bottom: 25px;">
+                                <label style="margin-bottom: 15px;">أيام العمل في الأسبوع</label>
+                                <div class="pill-checkbox-group" id="working-days">
+                                    <label class="pill-checkbox">
+                                        <input type="checkbox" value="0">
+                                        <span class="pill-content">أحد</span>
+                                    </label>
+                                    <label class="pill-checkbox">
+                                        <input type="checkbox" value="1">
+                                        <span class="pill-content">اثنين</span>
+                                    </label>
+                                    <label class="pill-checkbox">
+                                        <input type="checkbox" value="2">
+                                        <span class="pill-content">ثلاثاء</span>
+                                    </label>
+                                    <label class="pill-checkbox">
+                                        <input type="checkbox" value="3">
+                                        <span class="pill-content">أربعاء</span>
+                                    </label>
+                                    <label class="pill-checkbox">
+                                        <input type="checkbox" value="4">
+                                        <span class="pill-content">خميس</span>
+                                    </label>
+                                    <label class="pill-checkbox">
+                                        <input type="checkbox" value="5">
+                                        <span class="pill-content">جمعة</span>
+                                    </label>
+                                    <label class="pill-checkbox">
+                                        <input type="checkbox" value="6">
+                                        <span class="pill-content">سبت</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-hourglass-start"></i> وقت بدء الدوام</label>
+                                    <input type="time" id="sch-start" value="09:00">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-hourglass-end"></i> وقت نهاية الدوام</label>
+                                    <input type="time" id="sch-end" value="21:00">
+                                </div>
+                            </div>
+
+                            <div class="settings-footer">
+                                <button class="btn btn-primary" onclick="saveScheduleSettings()">
+                                    <i class="fas fa-save"></i> حفظ إعدادات الوقت
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Services Management Panel -->
+                    <div id="settings-panel-services" class="settings-panel">
+                        <div class="service-form-split">
+                            <!-- Left Side: Form -->
+                            <div class="settings-card" style="height: fit-content;">
+                                <h3 class="settings-header" id="service-form-title"><i class="fas fa-plus-circle"></i>
+                                    إضافة خدمة جديدة</h3>
+                                <div style="display: flex; flex-direction: column; gap: 15px;">
+                                    <div class="form-group">
+                                        <label>اسم الخدمة</label>
+                                        <input type="text" id="s-name" placeholder="مثلاً: تنظيف أسنان">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>السعر (د.ع)</label>
+                                        <input type="number" id="s-price" placeholder="0">
+                                    </div>
+                                    <div class="form-row" style="grid-template-columns: 1fr 1fr; margin-bottom: 0;">
+                                        <div class="form-group">
+                                            <label>المدة (دقيقة)</label>
+                                            <input type="number" id="s-duration" value="30">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>عدد الجلسات</label>
+                                            <input type="number" id="s-sessions" value="1">
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                        <button id="btn-add-service" class="btn btn-primary" onclick="addService()"
+                                            style="flex: 1;">
+                                            <i class="fas fa-plus"></i> إضافة خدمة
+                                        </button>
+                                        <button id="btn-reset-service" class="btn" onclick="resetServiceForm()"
+                                            style="display: none; background: var(--bg); color: var(--text-secondary); border: 1px solid var(--border);">
+                                            إلغاء
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Side: List -->
+                            <div class="settings-card">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                    <h3 class="settings-header" style="margin-bottom: 0; border: none;"><i
+                                            class="fas fa-list"></i> قائمة الخدمات</h3>
+                                    <div class="search-box-container" style="margin-bottom: 0; width: 250px;">
+                                        <i class="fas fa-search"></i>
+                                        <input type="text" id="service-search" placeholder="بحث عن خدمة..."
+                                            onkeyup="filterServices()">
+                                    </div>
+                                </div>
+                                <div class="table-container" style="max-height: 500px; overflow-y: auto;">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>الخدمة</th>
+                                                <th>السعر</th>
+                                                <th>المدة</th>
+                                                <th>الجلسات</th>
+                                                <th>الإجراءات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="services-list"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Reports (Admin Only) -->
+            <section id="reports" class="content-section">
+                <h2><i class="fas fa-chart-line"></i> التقارير المالية والتحليلات</h2>
+
+                <div class="form-card">
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: flex-end;">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-alt"></i> الفترة الزمنية</label>
+                            <select id="report-period-select" onchange="handleReportPeriodChange(); loadReports()">
+                                <option value="today">اليوم (تقرير يومي)</option>
+                                <option value="thisMonth">هذا الشهر (تقرير شهري)</option>
+                                <option value="thisYear">هذه السنة (تقرير سنوي)</option>
+                                <option value="yesterday">الأمس</option>
+                                <option value="last7">آخر 7 أيام</option>
+                                <option value="last30" selected>آخر 30 يوم</option>
+                                <option value="custom">فترة مخصصة</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-wallet"></i> طريقة الدفع</label>
+                            <select id="report-method-filter" onchange="loadReports()">
+                                <option value="all">كل الطرق</option>
+                                <option value="نقداً">نقداً</option>
+                                <option value="بطاقة ائتمان">بطاقة</option>

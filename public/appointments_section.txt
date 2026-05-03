@@ -1,0 +1,250 @@
+            <section id="appointments" class="content-section">
+                <input type="hidden" id="selected-app-date">
+                <div class="form-card" style="margin-top: 15px; padding: 25px;">
+                    <div
+                        style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; margin-bottom: 25px; background: linear-gradient(135deg, #ffffff, #f8fafc); padding: 25px; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
+                        <div
+                            style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: var(--secondary);">
+                        </div>
+
+                        <div style="flex: 1; min-width: 120px;">
+                            <label
+                                style="font-weight: 800; font-size: 14px; color: var(--primary); margin-bottom: 10px; display: block;"><i
+                                    class="fas fa-calendar-day" style="color: var(--secondary); margin-left: 5px;"></i>
+                                اليوم</label>
+                            <select id="app-day-select" onchange="onDateSelectChange()"
+                                style="padding: 10px 15px; border-radius: var(--radius-md); border: 2px solid var(--border); font-weight: 700; font-size: 13px; background: white; cursor: pointer; outline: none; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);"></select>
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label
+                                style="font-weight: 800; font-size: 14px; color: var(--primary); margin-bottom: 10px; display: block;"><i
+                                    class="fas fa-calendar-alt" style="color: var(--secondary); margin-left: 5px;"></i>
+                                الشهر</label>
+                            <select id="app-month-select" onchange="onDateSelectChange()"
+                                style="padding: 10px 15px; border-radius: var(--radius-md); border: 2px solid var(--border); font-weight: 700; font-size: 13px; background: white; cursor: pointer; outline: none; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);"></select>
+                        </div>
+                        <div style="flex: 1; min-width: 120px;">
+                            <label
+                                style="font-weight: 800; font-size: 14px; color: var(--primary); margin-bottom: 10px; display: block;"><i
+                                    class="fas fa-calendar-check"
+                                    style="color: var(--secondary); margin-left: 5px;"></i> السنة</label>
+                            <select id="app-year-select" onchange="onDateSelectChange()"
+                                style="padding: 10px 15px; border-radius: var(--radius-md); border: 2px solid var(--border); font-weight: 700; font-size: 13px; background: white; cursor: pointer; outline: none; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);"></select>
+                        </div>
+                        <div style="flex: 2; min-width: 250px;">
+                            <label
+                                style="font-weight: 800; font-size: 14px; color: var(--primary); margin-bottom: 10px; display: block;"><i
+                                    class="fas fa-search" style="color: var(--secondary); margin-left: 5px;"></i> بحث
+                                سريع</label>
+                            <div style="position: relative;">
+                                <i class="fas fa-search"
+                                    style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-secondary);"></i>
+                                <input type="text" id="appointment-search"
+                                    placeholder="بحث باسم المراجع أو الهاتف..."
+                                    onkeyup="filterAppointments()"
+                                    style="margin-bottom: 0; padding: 10px 40px 10px 15px; border-radius: var(--radius-md); border: 2px solid var(--border); font-size: 13px; background: white; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                            </div>
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label
+                                style="font-weight: 800; font-size: 14px; color: var(--primary); margin-bottom: 10px; display: block;"><i
+                                    class="fas fa-filter" style="color: var(--secondary); margin-left: 5px;"></i>
+                                الحالة</label>
+                            <select id="appointment-status-filter" onchange="filterAppointments()"
+                                style="padding: 10px 15px; border-radius: var(--radius-md); border: 2px solid var(--border); font-weight: 700; font-size: 13px; background: white; cursor: pointer; outline: none; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                                <option value="الكل">كل الحالات</option>
+                                <option value="قادم">قادم</option>
+                                <option value="تم الحضور">تم الحضور</option>
+                                <option value="ملغي">ملغي</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="scheduler-area" style="margin-bottom: 35px;">
+                        <h4
+                            style="margin: 0 0 15px 0; color: var(--secondary); font-size: 15px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-desktop"></i> مراقبة المواعيد (كارتات الأوقات)
+                        </h4>
+                        <div id="main-schedule-cards" class="time-grid">
+                            <!-- تظهر الكارتات هنا -->
+                        </div>
+                    </div>
+
+                    <div class="list-area">
+                        <h4
+                            style="margin: 0 0 15px 0; color: var(--secondary); font-size: 15px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-list"></i> قائمة حجوزات اليوم المختار
+                        </h4>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>التاريخ/الوقت</th>
+                                        <th>المراجع</th>
+                                        <th>الخدمة</th>
+                                        <th>المدة</th>
+                                        <th>المبلغ</th>
+                                        <th>الحالة</th>
+                                        <th>ملاحظات</th>
+                                        <th>العمليات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="appointments-list"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+            </section>
+
+            <!-- Visits & Billing -->
+            <section id="visits" class="content-section">
+                <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 30px;">
+                    <i class="fas fa-receipt" style="color: var(--primary); font-size: 28px;"></i>
+                    الفواتير والوصولات
+                </h2>
+
+                <!-- البحث والتصفية -->
+                <div class="form-card">
+                    <h3 style="margin-bottom: 25px;">
+                        <i class="fas fa-filter" style="color: var(--primary); margin-left: 10px;"></i>
+                        البحث والتصفية
+                    </h3>
+
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                        <!-- البحث بالاسم -->
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> البحث بالاسم أو رقم الهاتف</label>
+                            <input type="text" id="invoice-patient-search"
+                                placeholder="أدخل الاسم أو رقم الهاتف..." onkeyup="filterInvoices()"
+                                style="padding: 12px;">
+                        </div>
+
+                        <!-- البحث بالتاريخ من -->
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-alt"></i> من التاريخ</label>
+                            <input type="date" id="invoice-date-from" onchange="filterInvoices()">
+                        </div>
+
+                        <!-- البحث بالتاريخ إلى -->
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-check"></i> إلى التاريخ</label>
+                            <input type="date" id="invoice-date-to" onchange="filterInvoices()">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn-primary" style="width: auto; flex: 1;" onclick="filterInvoices()">
+                            <i class="fas fa-search"></i> بحث
+                        </button>
+                        <button class="btn-primary"
+                            style="width: auto; flex: 1; background: linear-gradient(135deg, #f59e0b, #d97706);"
+                            onclick="resetInvoiceFilters()">
+                            <i class="fas fa-redo"></i> إعادة تعيين
+                        </button>
+                    </div>
+                </div>
+
+                <!-- الإحصائيات السريعة -->
+                <div class="stats-grid"
+                    style="margin-bottom: 30px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    <div class="card glass-card">
+                        <h3>إجمالي الفواتير</h3>
+                        <div class="value" id="invoice-count">0</div>
+                        <i class="fas fa-file-invoice-dollar bg-icon"></i>
+                    </div>
+                    <div class="card glass-card">
+                        <h3>إجمالي الدخل (Paid)</h3>
+                        <div class="value" style="color: var(--success);" id="invoice-paid-total">0 د.ع</div>
+                        <i class="fas fa-wallet bg-icon"></i>
+                    </div>
+                </div>
+
+                <!-- جدول الفواتير -->
+                <div class="form-card">
+                    <h3 style="margin-bottom: 20px;">
+                        <i class="fas fa-list" style="color: var(--primary); margin-left: 10px;"></i>
+                        قائمة الفواتير
+                    </h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>رقم الوصل</th>
+                                    <th>اسم المراجع</th>
+                                    <th>رقم الهاتف</th>
+                                    <th>التاريخ</th>
+                                    <th>الخدمات</th>
+                                    <th>المبلغ</th>
+                                    <th>العمليات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="visits-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- قسم إضافة زيارة جديدة (مخفي بشكل افتراضي) -->
+                <div id="new-visit-section" style="display: none; margin-top: 30px;">
+                    <div class="form-card">
+                        <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                            <i class="fas fa-plus-circle" style="color: var(--primary);"></i>
+                            فتح زيارة جديدة
+                        </h3>
+                        <div class="form-group">
+                            <label>اختر المراجع</label>
+                            <select id="visit-patient-select"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>الخدمات المطلوبة</label>
+                            <input type="text" id="visit-service-search"
+                                placeholder="ابحث عن خدمة لإضافتها..." onkeyup="filterVisitServices()"
+                                style="margin-bottom: 8px; padding: 8px;">
+                            <div id="services-checkboxes" class="srv-checkbox-group"></div>
+                        </div>
+                        <!-- قسم الحسابات والفاتورة الفورية -->
+                        <div class="form-group" id="visit-billing-card"
+                            style="background: linear-gradient(135deg, #d1fae5, #ecfdf5); padding: 20px; border-radius: 12px; border: 2px solid var(--border); margin-top: 20px;">
+                            <h4 style="margin: 0 0 15px 0; font-size: 16px; color: var(--primary);"><i
+                                    class="fas fa-calculator"></i> تفاصيل الحساب</h4>
+                            <div id="selected-services-summary" style="min-height: 40px;">
+                                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">يرجى
+                                    اختيار الخدمات
+                                    لعرض الأسعار...</p>
+                            </div>
+                            <div
+                                style="margin-top: 15px; padding-top: 15px; border-top: 2px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 700; font-size: 16px;">إجمالي الفاتورة:</span>
+                                <span id="visit-total-display"
+                                    style="font-size: 22px; font-weight: 800; color: var(--primary);">0 د.ع</span>
+                            </div>
+                            <!-- خانة عدد الجلسات وسعر الجلسة -->
+                            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <label style="margin: 0; font-size: 14px; font-weight: 600;">عدد
+                                        الجلسات:</label>
+                                    <input type="number" id="visit-sessions-count" value="1" min="1"
+                                        oninput="updateVisitBilling()"
+                                        style="width: 100px; padding: 8px; text-align: center; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; color: var(--success); font-weight: 700;">
+                                    <span>سعر الجلسة الواحدة:</span>
+                                    <span id="session-price-display">0 د.ع</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-primary" onclick="saveVisit()" style="margin-top: 20px;">
+                            <i class="fas fa-save"></i> حفظ الزيارة وإصدار فاتورة
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="content-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2 style="margin: 0;"><i class="fas fa-tools"></i> إعدادات النظام</h2>
