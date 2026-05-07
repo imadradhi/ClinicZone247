@@ -665,10 +665,10 @@
                                 </div>
 
                                 <div style="display: flex; justify-content: center; gap: 15px;">
-                                    <button class="btn-primary" style="flex: 1; max-width: 200px; height: 50px; font-size: 16px; font-weight: 700; background: var(--success); border: none; border-radius: var(--radius-sm);" onclick="saveServiceFromModal('${pId}', '${p.name}', '${p.phone}')">
+                                    <button class="btn-primary" style="flex: 1; max-width: 200px; height: 50px; font-size: 16px; font-weight: 700; background: linear-gradient(to right, #2b4fa3, #1abc9c); border: none; border-radius: var(--radius-sm);" onclick="saveServiceFromModal('${pId}', '${p.name}', '${p.phone}')">
                                         <i class="fas fa-save"></i> حفظ الخدمة
                                     </button>
-                                    <button class="btn-logout" style="flex: 1; max-width: 150px; height: 50px; font-size: 16px; font-weight: 700; border: none; border-radius: var(--radius-sm);" onclick="closeServiceModal()">
+                                    <button class="btn-logout" style="flex: 1; max-width: 150px; height: 50px; font-size: 16px; font-weight: 700; background: linear-gradient(to right, #64748b, #94a3b8); color: white; border: none; border-radius: var(--radius-sm);" onclick="closeServiceModal()">
                                         <i class="fas fa-times"></i> إلغاء
                                     </button>
                                 </div>
@@ -835,7 +835,7 @@
                             }
 
                             const payAction = paidInThisSession < sessionPrice ? `<button class="btn-session-action btn-session-pay" onclick="addPaymentToService('${v.key}', ${remainingInThisSession})"><i class="fas fa-cash-register"></i> تسديد</button>` : `<span style="color:var(--success); font-size:10px; font-weight:700;"><i class="fas fa-check-double"></i> مدفوع</span>`;
-                            const finishAction = !session.executed ? `<button class="btn-session-action btn-session-pay" style="color: var(--success); background: rgba(16, 185, 129, 0.08);" onclick="finishSession('${v.key}', ${i})"><i class="fas fa-check"></i> إنهاء</button>` : '';
+                            const finishAction = !session.executed ? `<button class="btn-session-action btn-session-pay" style="color: white; background: linear-gradient(to right, #0ea5e9, #38bdf8); border: none;" onclick="finishSession('${v.key}', ${i})"><i class="fas fa-check"></i> إنهاء</button>` : '';
                             const postponeAction = !session.executed ? `<button class="btn-session-action btn-session-postpone" onclick="postponeSession('${v.key}', ${i}, '${session.appointmentId || ''}', '${pId}', '${pName}')"><i class="fas fa-undo"></i> تأجيل</button>` : '';
 
                             sessionsTableHtml += `
@@ -1112,8 +1112,8 @@
                             </div>
 
                             <div style="margin-top: 25px; display: flex; gap: 10px;">
-                                <button class="btn-primary" style="flex: 2;" id="confirm-edit-as-btn">حفظ التغييرات</button>
-                                <button class="btn-logout" style="flex: 1; background: var(--bg); color: var(--text);" onclick="document.getElementById('edit-service-entry-modal').remove()">إلغاء</button>
+                                <button class="btn-primary" style="flex: 2; background: linear-gradient(to right, #2b4fa3, #1abc9c); border: none;" id="confirm-edit-as-btn">حفظ التغييرات</button>
+                                <button class="btn-logout" style="flex: 1; background: linear-gradient(to right, #64748b, #94a3b8); color: white; border: none;" onclick="document.getElementById('edit-service-entry-modal').remove()">إلغاء</button>
                             </div>
                         </div>
                     </div>
@@ -1248,8 +1248,8 @@
                         </div>
 
                         <div style="margin-top: 25px; display: flex; gap: 10px;">
-                            <button class="btn-primary" style="flex: 2; background: var(--success);" id="confirm-pay-btn">تأكيد الدفع وطباعة الوصل</button>
-                            <button class="btn-logout" style="flex: 1; background: var(--bg); color: var(--text);" onclick="document.getElementById('payment-method-modal').remove()">إلغاء</button>
+                            <button class="btn-primary" style="flex: 2; background: linear-gradient(to right, #10b981, #34d399); border: none;" id="confirm-pay-btn">تأكيد الدفع وطباعة الوصل</button>
+                            <button class="btn-logout" style="flex: 1; background: linear-gradient(to right, #64748b, #94a3b8); color: white; border: none;" onclick="document.getElementById('payment-method-modal').remove()">إلغاء</button>
                         </div>
                     </div>
                 </div>
@@ -1330,3 +1330,9 @@
             printWindow.document.write('<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">');
             printWindow.document.write('</head><body>');
             printWindow.document.write(html);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+    }
+}
