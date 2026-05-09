@@ -2935,6 +2935,13 @@
         let tenantPath = "";
         let officialClinicName = "ClinicZone247"; // Default clinic name
 
+        // --- منع الرجوع للخلف في المتصفح ---
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.pushState(null, null, location.href);
+            showToast("لا يمكن الرجوع للخلف. يرجى تسجيل الخروج إذا كنت ترغب في مغادرة لوحة التحكم.", "info");
+        };
+
         // --- مراقبة حالة تسجيل الدخول ---
         auth.onAuthStateChanged(user => {
             const loader = document.getElementById('loader');

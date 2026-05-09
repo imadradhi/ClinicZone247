@@ -441,7 +441,7 @@
             successMsg.textContent = `أهلاً وسهلاً بك! جاري تحويلك...`;
 
             setTimeout(() => {
-              window.location.href = 'dashboard.html';
+              window.location.replace('dashboard.html');
             }, 1500);
           })
           .catch((error) => {
