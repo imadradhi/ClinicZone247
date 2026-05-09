@@ -1613,18 +1613,6 @@
 
         <!-- System & User Info (Left Side in RTL) -->
         <div class="navbar-left-content">
-            <div
-                style="display: flex; align-items: center; gap: 15px; background: white; padding: 10px 20px; border-radius: 16px; border: 1px solid rgba(13, 92, 99, 0.1); box-shadow: var(--shadow-sm);">
-                <div
-                    style="width: 40px; height: 40px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary);">
-                    <i class="fas fa-user-shield" style="font-size: 20px;"></i>
-                </div>
-                <div style="display: flex; flex-direction: column;">
-                    <span id="navbar-greeting" style="font-size: 15px; font-weight: 800; color: var(--text);">مرحباً
-                        بك</span>
-                    <span style="font-size: 11px; color: var(--text-secondary); font-weight: 700;">مدير النظام</span>
-                </div>
-            </div>
 
             <div class="nav-version-info" style="border: none; padding: 0; gap: 8px;">
                 <span
@@ -3608,7 +3596,6 @@
                     html += `<tr><td>${s.name}</td><td>${parseFloat(s.price).toLocaleString()}</td><td>${s.duration}</td><td>${s.sessions}</td>
                         <td><div style="display:flex; gap:5px;">
                             <button class="btn-action btn-edit" onclick="prepareEditService('${child.key}', '${s.name}', ${s.price}, ${s.sessions}, ${s.duration})"><i class="fas fa-edit"></i></button>
-                            <button class="btn-action btn-delete" onclick="deleteService('${child.key}')"><i class="fas fa-trash"></i></button>
                         </div></td></tr>`;
                     cbHtml += `<label class="srv-item"><input type="checkbox" data-name="${s.name}" data-price="${s.price}" onchange="updateVisitBilling()"> <span>${s.name}</span></label>`;
                 });
@@ -3641,7 +3628,6 @@
                                 </div>
                             </div>
                             <div style="display:flex; gap:10px;">
-                                <button class="btn-action btn-delete" onclick="deleteService('${child.key}')"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>`;
                 });
@@ -3796,15 +3782,21 @@
                         if (a.status !== 'cancelled') bookedMap[a.time] = { key: child.key, ...a };
                     });
 
+                    const today = new Date().toISOString().split('T')[0];
+                    const now = new Date();
+                    const curTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
                     // توليد كارتات الأوقات (الشبكة)
                     for (let h = startHour; h < endHour; h++) {
                         for (let m of ['00', '30']) {
                             const time = `${String(h).padStart(2, '0')}:${m}`;
                             const a = bookedMap[time];
+                            const isPast = (date === today && time < curTime);
+
                             if (a) {
                                 const statusClass = a.status === 'تم الحضور' ? 'success' : 'warning';
                                 cardsHtml += `
-                                    <div class="time-slot booked-card">
+                                    <div class="time-slot booked-card" style="${isPast ? 'opacity: 0.8;' : ''}">
                                         <div class="slot-header" style="display:flex; justify-content:space-between; width:100%; align-items:center; margin-bottom:4px;">
                                             <span class="slot-time" style="font-size:11px; font-weight:800;">${formatTimeTo12h(time)}</span>
                                             <span class="badge-${statusClass}" style="font-size:9px; padding:2px 4px;">${a.status || 'قادم'}</span>
@@ -3816,12 +3808,20 @@
                                         </div>
                                     </div>`;
                             } else {
-                                cardsHtml += `
-                                    <div class="time-slot available" onclick="openQuickBookModal('${time}', '${date}')">
-                                        <div class="slot-time">${formatTimeTo12h(time)}</div>
-                                        <div class="slot-status" style="font-size:10px; opacity:0.8;">متاح</div>
-                                        <i class="fas fa-plus-circle" style="font-size:14px; margin-top:5px; opacity:0.5;"></i>
-                                    </div>`;
+                                if (isPast) {
+                                    cardsHtml += `
+                                        <div class="time-slot past-slot" style="background:#f1f5f9; cursor:not-allowed; border-color:#e2e8f0;">
+                                            <div class="slot-time" style="color:#94a3b8;">${formatTimeTo12h(time)}</div>
+                                            <div class="slot-status" style="font-size:10px; color:#cbd5e1;">انتهى</div>
+                                        </div>`;
+                                } else {
+                                    cardsHtml += `
+                                        <div class="time-slot available" onclick="openQuickBookModal('${time}', '${date}')">
+                                            <div class="slot-time">${formatTimeTo12h(time)}</div>
+                                            <div class="slot-status" style="font-size:10px; opacity:0.8;">متاح</div>
+                                            <i class="fas fa-plus-circle" style="font-size:14px; margin-top:5px; opacity:0.5;"></i>
+                                        </div>`;
+                                }
                             }
                         }
                     }
@@ -3858,6 +3858,9 @@
         }
 
         function openQuickBookModal(time, date) {
+            const today = new Date().toISOString().split('T')[0];
+            if (date < today) return showToast("لا يمكن حجز مواعيد في الماضي", "error");
+
             const modalHtml = `
                 <div id="quick-book-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 10006; backdrop-filter: blur(4px);"> 
                     <div class="card" style="width: 90%; max-width: 450px; padding: 25px; background: white; border-radius: 20px;">
@@ -3888,6 +3891,13 @@
         }
 
         function saveQuickAppointment(time, date) {
+            const today = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const curTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+            if (date < today) return showToast("لا يمكن حجز مواعيد في الماضي", "error");
+            if (date === today && time < curTime) return showToast("لا يمكن حجز موعد في وقت مضى", "error");
+
             const pId = document.getElementById('quick-app-p-id').value;
             const serviceName = document.getElementById('quick-app-service').value;
             if (!pId) return showToast("يرجى اختيار مراجع", "error");
@@ -5386,6 +5396,9 @@
 
         function openLargeCalendarForSession(pId, pName, vKey, bookingGroupId, sIndex, appId, appDate, appTime) {
             const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('sb-page-date');
+            if (dateInput) dateInput.min = today;
+
             const initialDate = appDate || today;
             currentBookingContext = { pId, pName, vKey, sIndex, appId, chosenTime: appTime };
             document.getElementById('sb-page-subtitle').innerHTML = `للمراجع: <strong>${pName}</strong> | جلسة رقم ${sIndex + 1}`;
@@ -5400,6 +5413,10 @@
 
         function renderTimeSlotsForPage() {
             const date = document.getElementById('sb-page-date').value;
+            const today = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const curTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
             const container = document.getElementById('sb-page-time-slots');
             tRef('appointments').orderByChild('date').equalTo(date).once('value', snap => {
                 const booked = [];
@@ -5409,7 +5426,21 @@
                     for (let m of ['00', '30']) {
                         const time = `${String(h).padStart(2, '0')}:${m}`;
                         const isBooked = booked.includes(time);
-                        html += `<div onclick="${isBooked ? '' : `selectTimeForPage('${time}')`}" style="padding:10px; text-align:center; border-radius:8px; border:1px solid #ddd; cursor:pointer; background:${isBooked ? '#eee' : 'white'}">${time}</div>`;
+                        const isPast = (date === today && time < curTime);
+                        
+                        let style = `padding:10px; text-align:center; border-radius:8px; border:1px solid #ddd;`;
+                        let onclick = "";
+                        
+                        if (isBooked) {
+                            style += `background:#eee; cursor:default;`;
+                        } else if (isPast) {
+                            style += `background:#f9fafb; color:#d1d5db; cursor:not-allowed;`;
+                        } else {
+                            style += `background:white; cursor:pointer;`;
+                            onclick = `selectTimeForPage('${time}')`;
+                        }
+                        
+                        html += `<div onclick="${onclick}" style="${style}">${time}</div>`;
                     }
                 }
                 container.innerHTML = html;
@@ -5423,8 +5454,15 @@
 
         function saveSessionAppointment(pId, pName, vKey, sIndex, appId) {
             const date = document.getElementById('sb-page-date').value;
+            const today = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const curTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+            if (date < today) return showToast("لا يمكن حجز مواعيد في الماضي", "error");
+            
             const time = currentBookingContext.chosenTime;
             if (!time) return showToast("يرجى اختيار الوقت", "warning");
+            if (date === today && time < curTime) return showToast("لا يمكن حجز موعد في وقت مضى", "error");
 
             const appData = {
                 pId, pName, date, time,
