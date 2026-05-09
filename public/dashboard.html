@@ -124,19 +124,18 @@
         }
 
         .navbar {
-            background: var(--bg-glass);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            padding: 15px 40px;
             padding: 15px 50px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             position: sticky;
             top: 0;
             z-index: 1000;
-            border-bottom: 1px solid var(--border-glass);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
             height: 90px;
             box-sizing: border-box;
         }
@@ -340,19 +339,20 @@
             min-height: calc(100vh - 75px);
         }
 
-        /* Sidebar */
+        /* Sidebar Glassmorphism */
         .sidebar {
             width: 280px;
-            background: var(--bg-glass);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-left: 1px solid var(--border-glass);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
             padding: 30px 0;
             position: sticky;
             top: 95px;
             height: calc(100vh - 95px);
             overflow-y: auto;
             z-index: 100;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.02);
         }
 
         .nav-item {
@@ -399,6 +399,34 @@
             background: transparent;
         }
 
+        .content-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .content-section.active {
+            display: block;
+            animation: sectionFadeIn 0.5s forwards;
+        }
+
+        @keyframes sectionFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Hover Lift */
+        .card, .form-card, .stats-grid .card {
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .card:hover, .form-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-light);
+        }
+
         .welcome-section {
             margin-bottom: 40px;
             padding: 35px;
@@ -431,6 +459,63 @@
             letter-spacing: -0.5px;
             position: relative;
             z-index: 1;
+        }
+
+        /* Goodbye Overlay Styles */
+        .goodbye-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .goodbye-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .goodbye-text {
+            font-size: 80px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transform: scale(0.7);
+            transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .goodbye-overlay.active .goodbye-text {
+            transform: scale(1.1);
+        }
+        .goodbye-progress-container {
+            width: 350px;
+            height: 6px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            margin-top: 35px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        .goodbye-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 10px;
+        }
+        .goodbye-overlay.active .goodbye-progress-fill {
+            animation: goodbyeProgress 2s linear forwards;
+        }
+        @keyframes goodbyeProgress {
+            from { width: 0%; }
+            to { width: 100%; }
         }
 
         .welcome-section p {
@@ -1588,13 +1673,21 @@
 </head>
 
 <body>
+    <!-- Goodbye Overlay -->
+    <div id="goodbye-overlay" class="goodbye-overlay">
+        <div class="goodbye-text">مع السلامة</div>
+        <div style="margin-top: 15px; color: #64748b; font-weight: 700; font-size: 18px;">جاري تسجيل الخروج من النظام...</div>
+        <div class="goodbye-progress-container">
+            <div class="goodbye-progress-fill"></div>
+        </div>
+    </div>
+
     <div class="mesh-bg"></div>
     <div id="loader" class="loading-overlay">
         <div class="loading-spinner"></div>
         <div class="loading-text">جاري التحقق من الصلاحيات...</div>
     </div>
     <div class="toast-container" id="toast-container"></div>
-    <div id="debug-path-bar" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(30,64,175,0.9); color:white; padding:8px 20px; border-radius:20px; font-size:13px; font-weight:700; z-index:9999; backdrop-filter:blur(8px); box-shadow:0 4px 15px rgba(0,0,0,0.2); direction:ltr;"></div>
     <nav class="navbar">
         <!-- Clinic Info (Right Side in RTL) -->
         <div class="logo" style="gap: 20px;">
@@ -2971,13 +3064,6 @@
                             console.log('[ClinicZone] No existing data. New path:', tenantPath);
                         }
 
-                        // إظهار معلومات المسار في شريط التشخيص (debug bar)
-                        const debugBar = document.getElementById('debug-path-bar');
-                        if (debugBar) {
-                            debugBar.textContent = `📁 مسار البيانات: /${tenantPath || 'root'} | مراجعون: ${tenantCount || rootCount}`;
-                            debugBar.style.display = 'block';
-                            setTimeout(() => { debugBar.style.display = 'none'; }, 8000);
-                        }
 
                         // جلب اسم العيادة
                         tRef('settings/clinicName').once('value', snap => {
@@ -3068,7 +3154,12 @@
         // --- وظيفة تسجيل الخروج مع التأكيد ---
         function handleLogout() {
             if (confirm("هل أنت متأكد من رغبتك في تسجيل الخروج؟")) {
-                auth.signOut();
+                const overlay = document.getElementById('goodbye-overlay');
+                if (overlay) overlay.classList.add('active');
+                
+                setTimeout(() => {
+                    auth.signOut();
+                }, 2000);
             }
         }
 
