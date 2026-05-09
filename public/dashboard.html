@@ -727,25 +727,26 @@
 
         .service-header {
             padding: 20px 25px;
-            background: linear-gradient(to left, #ffffff, #f8fafc);
+            background: linear-gradient(135deg, var(--primary), #0f172a);
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
             user-select: none;
             transition: all 0.3s ease;
-            border-right: 5px solid #e2e8f0;
+            border-right: 5px solid var(--secondary);
+            color: white;
         }
 
         .service-header:hover {
-            background: #f1f5f9;
-            border-right-color: var(--secondary);
+            background: #0f172a;
+            border-right-color: var(--accent);
         }
 
         .service-header.active {
-            background: linear-gradient(to left, #f0f7ff, var(--primary-light));
-            border-bottom: 1px solid var(--primary-light);
-            border-right-color: var(--primary);
+            background: linear-gradient(135deg, #0f172a, var(--primary));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-right-color: var(--accent);
         }
 
         .service-header .chevron {
@@ -1686,6 +1687,11 @@
                         <i class="fas fa-notes-medical bg-icon"></i>
                         <h3>زيارات اليوم</h3>
                         <div class="value" id="stat-visits-today">0</div>
+                    </div>
+                    <div class="card stagger-item">
+                        <i class="fas fa-calendar-check bg-icon"></i>
+                        <h3>حجوزات اليوم</h3>
+                        <div class="value" id="stat-bookings-today">0</div>
                     </div>
                 </div>
 
@@ -3482,7 +3488,7 @@
                 tRef('payments_log').once('value')
             ]).then(([pSnap, aSnap, sSnap, paySnap]) => {
                 const totalPatients = pSnap.numChildren();
-                let visitsToday = 0, incomeToday = 0;
+                let visitsToday = 0, incomeToday = 0, bookingsToday = 0;
                 
                 // تجميع بيانات الرسم البياني (آخر 7 أيام)
                 const last7Days = [];
@@ -3497,6 +3503,13 @@
                     visitsDataMap[ds] = 0;
                     incomeDataMap[ds] = 0;
                 }
+                
+                aSnap.forEach(child => {
+                    const app = child.val();
+                    if (app && app.date === today && app.status !== 'cancelled') {
+                        bookingsToday++;
+                    }
+                });
 
                 paySnap.forEach(child => {
                     const v = child.val();
@@ -3522,25 +3535,38 @@
                 if (vEl) vEl.textContent = visitsToday.toLocaleString();
                 const iEl = document.getElementById('stat-income-today');
                 if (iEl) iEl.textContent = incomeToday.toLocaleString() + ' د.ع';
+                const bEl = document.getElementById('stat-bookings-today');
+                if (bEl) bEl.textContent = bookingsToday.toLocaleString();
 
                 // تحديث الرسوم البيانية
                 const vCtx = document.getElementById('visitsChart');
                 if (vCtx) {
                     if (mainVisitsChartInstance) mainVisitsChartInstance.destroy();
                     mainVisitsChartInstance = new Chart(vCtx, {
-                        type: 'line',
+                        type: 'bar',
                         data: {
                             labels: last7Days.map(d => d.substring(5)),
                             datasets: [{
                                 label: 'الزيارات',
                                 data: last7Days.map(d => visitsDataMap[d]),
-                                borderColor: '#0d9488',
-                                backgroundColor: 'rgba(13, 148, 136, 0.1)',
-                                tension: 0.4,
-                                fill: true
+                                backgroundColor: '#10b981',
+                                borderRadius: 4
                             }]
                         },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false, 
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1,
+                                        precision: 0
+                                    }
+                                }
+                            }
+                        }
                     });
                 }
 
@@ -4815,46 +4841,46 @@
                         const isFirst = (index === 0);
                         cardsHtml += `
                             <div class="service-history-card" ${isFullyPaid ? 'style="background-color: #f0fdf4; border-color: var(--success);"' : ''}>
-                                <div class="service-header ${isFirst ? 'active' : ''}" onclick="toggleServiceAccordion(this)" ${isFullyPaid ? 'style="background: transparent;"' : ''}> 
-                                    <div class="service-title">
-                                        <i class="fas fa-box-open" style="color: var(--primary);"></i>
+                                <div class="service-header ${isFirst ? 'active' : ''}" onclick="toggleServiceAccordion(this)"> 
+                                    <div class="service-title" style="display:flex; align-items:center; gap:12px;">
+                                        <i class="fas fa-box-open" style="color: var(--secondary); font-size:20px;"></i>
                                         <div>
-                                            <div style="font-size: 15px; font-weight: 800;">${srvNames}</div>
-                                            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">تاريخ الإضافة: ${v.date} | <span style="font-family:monospace; font-weight:800; color:var(--primary);">رقم الخدمة: ${v.vId}</span></div>
+                                            <div style="font-size: 15px; font-weight: 800; color:white;">${srvNames}</div>
+                                            <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 2px;">تاريخ الإضافة: ${v.date} | <span style="font-family:monospace; font-weight:800; color:var(--accent);">رقم الخدمة: ${v.vId}</span></div>
                                         </div>
                                     </div>
                                     <div class="service-summary-stats" style="display: flex; gap: 20px; align-items: center;">
                                         <div style="text-align: center;">
-                                            <div style="font-size: 10px; color: var(--text-secondary); font-weight: 700;">المبلغ الإجمالي</div>
-                                            <div style="font-size: 12px; font-weight: 800; color: var(--text);">${(v.grossTotal || total).toLocaleString()} د.ع</div>
+                                            <div style="font-size: 10px; color: rgba(255,255,255,0.7); font-weight: 700;">المبلغ الإجمالي</div>
+                                            <div style="font-size: 12px; font-weight: 800; color: white;">${(v.grossTotal || total).toLocaleString()} د.ع</div>
                                         </div>
                                         ${(v.discount && v.discount > 0) ? `
                                         <div style="text-align: center;">
-                                            <div style="font-size: 10px; color: var(--danger); font-weight: 700;">الخصم</div>
-                                            <div style="font-size: 12px; font-weight: 800; color: var(--danger);">${v.discount.toLocaleString()} د.ع</div>
+                                            <div style="font-size: 10px; color: #ff9999; font-weight: 700;">الخصم</div>
+                                            <div style="font-size: 12px; font-weight: 800; color: #ff9999;">${v.discount.toLocaleString()} د.ع</div>
                                         </div>
                                         ` : ''}
                                         <div style="text-align: center;">
-                                            <div style="font-size: 10px; color: var(--primary); font-weight: 700;">الصافي</div>
-                                            <div style="font-size: 12px; font-weight: 800; color: var(--primary);">${total.toLocaleString()} د.ع</div>
+                                            <div style="font-size: 10px; color: var(--secondary); font-weight: 700;">الصافي</div>
+                                            <div style="font-size: 12px; font-weight: 800; color: var(--secondary);">${total.toLocaleString()} د.ع</div>
                                         </div>
                                         <div style="text-align: center;">
-                                            <div style="font-size: 10px; color: var(--success); font-weight: 700;">المسدد</div>
-                                            <div style="font-size: 12px; font-weight: 800; color: var(--success);">${paid.toLocaleString()} د.ع</div>
+                                            <div style="font-size: 10px; color: #4ade80; font-weight: 700;">المسدد</div>
+                                            <div style="font-size: 12px; font-weight: 800; color: #4ade80;">${paid.toLocaleString()} د.ع</div>
                                         </div>
                                         <div style="text-align: center;">
-                                            <div style="font-size: 10px; color: var(--text-secondary); font-weight: 700;">الإنجاز</div>
-                                            <div style="font-size: 12px; font-weight: 800; color: var(--text);">${executedCount} / ${sessionCount}</div>
+                                            <div style="font-size: 10px; color: rgba(255,255,255,0.7); font-weight: 700;">الإنجاز</div>
+                                            <div style="font-size: 12px; font-weight: 800; color: white;">${executedCount} / ${sessionCount}</div>
                                         </div>
                                         <div style="display: flex; gap: 6px; margin-right: 10px;">
-                                            <button class="btn-action btn-edit" style="padding: 5px 8px;" onclick="event.stopPropagation(); showEditAddedServiceModal('${v.key}')">
+                                            <button class="btn-action btn-edit" style="padding: 5px 8px; border:1px solid rgba(255,255,255,0.2);" onclick="event.stopPropagation(); showEditAddedServiceModal('${v.key}')">
                                                 <i class="fas fa-edit" style="font-size: 12px;"></i>
                                             </button>
-                                            <button class="btn-action btn-delete" style="padding: 5px 8px;" onclick="event.stopPropagation(); deleteAddedService('${v.key}')">
+                                            <button class="btn-action btn-delete" style="padding: 5px 8px; border:1px solid rgba(255,255,255,0.2);" onclick="event.stopPropagation(); deleteAddedService('${v.key}')">
                                                 <i class="fas fa-trash" style="font-size: 12px;"></i>
                                             </button>
                                         </div>
-                                        <i class="fas fa-chevron-down chevron" style="margin-right: 10px;"></i> 
+                                        <i class="fas fa-chevron-down chevron" style="margin-right: 10px; color:white;"></i> 
                                     </div>
                                 </div>
                                 <div class="service-content ${isFirst ? 'open' : ''}">
@@ -5319,7 +5345,6 @@
                 <div dir="rtl" style="font-family: 'Cairo', sans-serif; width: 70mm; margin: auto; color: #000;">
                     <div style="text-align:center;">
                         <h2 style="margin:0; font-size:18px;">${clinicName}</h2>
-                        <div style="font-size:14px; margin-bottom:5px; font-weight:800; color:${color};">${title}</div>
                     </div>
                     <div style="border-top: 1px dashed #000; margin: 8px 0;"></div> 
                     <div style="font-size:12px;">
